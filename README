@@ -1,0 +1,14 @@
+README
+
+See in-line documentation to see how the program works.
+
+This is the Analysis Suite. To get data for a microtubule, open begin.m and hit run. Select the .mat file for the MT you wish to analyse. The program should automatically do the work for you.
+
+Additional functions can be found in other_funcitons. These are untested and unverified.
+
+If you have questions, contact me at (912)816-8497 or george.saussy@yale.edu
+
+
+TODO
+Verfy other_functions contents.
+Also see in-line to-do markers.
