@@ -1,6 +1,6 @@
 README
 
-See in-line documentation to see how the program works.
+See in-line documentation and the writeup to see how the program works.
 
 This is the Analysis Suite. To get data for a microtubule, open begin.m and hit run. Select the .mat file for the MT you wish to analyse. The program should automatically do the work for you.
 
