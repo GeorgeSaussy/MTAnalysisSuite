@@ -111,7 +111,7 @@ We also consider a more general model that computes an energy functional given t
 
 \section{TODO}
 
-Write autocorrelation function. Write correspondence between B-model and $\kappa$-model. find $\cos$ mode decay times and hydrodynamic modes.
+Write correspondence between B-model and $\kappa$-model. find $\cos$ mode decay times and hydrodynamic modes.
 
 
 
@@ -128,7 +128,7 @@ Now we take the Fourier series of $\theta$ to get
 $$ \theta (s)= \sum_{n=0}^\infty a_n \cos (\pi ns/L) $$
 and we substitute this into the expressions for the potential energy and simplify to get 
 \begin{align*} U &= B \int_0^L \diff s 
-	(\sum_{n=0}^\infty ds a_n \cos (\pi ns/L) \\ &+ A/2 \int_0^L ds (\sum_{n=0}^\infty \frac{-\pi na_n}{L} \sin (\pi ns/L)    \end{align*}
+	\Big ( \sum_{n=0}^\infty ds a_n \cos (\pi ns/L) \Big ) \\ &+ A/2 \int_0^L ds \Big ( \sum_{n=0}^\infty \frac{-\pi na_n}{L} \sin (\pi ns/L) \Big )    \end{align*}
 
 (We expect to get many cross terms between Fourier modes. However, after integration, they all vanish leaving only square terms.) Combining the integrals and moving the sum to the outside we get:
 \begin{align*} 
@@ -151,10 +151,34 @@ $$ \langle a_n^2 \rangle^{noise} = \frac{8\langle \epsilon^2 \rangle}{L}\Big [1+
 where $\epsilon$ is the error in the position reported by the tracking. To figure this value, we tracked a motionless MT that was stuck to the surface of the slide glass for [tktk frame number] and calculated  $\langle \epsilon^2 \rangle$ by taking the variance of the positions. We found $\langle \epsilon^2 \rangle = [tktk]$.
 $$ \langle a_n^2 \rangle^{measured}=\frac{k_BT/2}{(BL/2+A\pi^2 n^2 /4L)} + \frac{8\langle \epsilon^2 \rangle}{L}\Big [1+(N-1)\sin^2 \Big (\frac{n\pi}{2N}\Big )\Big ] $$ 
 
-\section{Fitting the model}
+\section{Experiment design and model fitting}
 
-$$ COMING $$
-$$ SOON $$
+Our experiment seeks to use the above calculation to model the behaviour of planar MTs under a microscope. Specifically, the above calculation tells us the expected cosign Fourier mode amplitudes of the tangent angle of a bending MT. We use dark field imaging with computer vision to determine the positions of points along the length of the curve representing an MT's shape [tktk expand explanation]. We take these measurements for a series of frames. To find the $A$ and $B$ parameters, first we interpolated these observations, and then calculate the Fourier modes of the tangent angles. Then we sparsify the data until the frame-to-frame autocorrelations are negligible. [tktk explain sarsification]
+
+Before moving on, we know whatever the final fit function is, we will need some error on the number to know how significant it is. It is possible to let Fiesta and Matlab guess the error, but we found that we could write a more accurate fitting algorithm by hand. However, we need to know the error in the cosign mode amplitudes. This is done one of two ways, the Gittes method above, or by taking an approximated error on the $x$ and $y$ points from the CV MT fitting and propagating the error through the mode amplitude calculation directly. Namely, if we are looking at segment $(x_i,y_i),(x_{i+1},y_{i+1})$ with error terms given by $\delta x$ for the $x$ terms and $\delta y$ for the $y$ terms. We further assume $\delta x=\delta y$ this estimation comes from the known resolution of the darkfield imaging process. We also assume the error is isotropic because the imaging techniques itself it. This is a feature not included in the Gittes method. The error for the tangent angle $\theta_i$ for the segment is then 
+$$ \delta \theta_i=\delta \arctan(\Delta y_i/\Delta x_i) = \Big (1+\frac{\Delta y_i^2}{\Delta x_i^2}\Big )^{-1} \delta \frac{\Delta y_i}{\Delta x_i} = (1+\frac{\Delta y_i^2}{\Delta x_i^2}\Big )^{-1} \Big ( \frac{\sqrt 2 \delta y}{\Delta x_i} + \frac{\Delta y_i}{\Delta x_i^2}\sqrt 2 \delta x \Big ) $$
+
+where $\Delta x_i=x_{i+1}-x_i$ and $\Delta y_i=y_{i+1}-y_i$.  
+
+(Worth noting, technically, the above is not correct. Actually we should be using a two parameter arctangent function with its derivative, in which case the above only includes the non-edge cases. However the edge cases are easy to account for in the computer implementation and not explicitly tackled here.) 
+
+Further we need to calculate the variance in the length of a segment, $s_i$, as well. The calculation is similar.
+
+$$ \delta s_i = \delta \sqrt{\Delta x_i^2+\Delta y_i^2} = \Big [ \Delta x_i^2 + \Delta y_i^2 \Big ]^{-1} \Big [ 2x\delta x + 2y\delta y \Big ] $$
+
+(Also worth noting in a future implementation I hope to calculate the covariance in the error for these terms to tighten the bounds on the numbers.)
+
+The error for mode $i$ of the MT's shape is then given by 
+
+$$ \delta a_i = \delta \sum_{n=1}^{N-1} \theta_i s_i \cos (\pi ns/L) = \sqrt{\sum_{n=1}^{N-1} (s_i \delta \theta_i + \theta_i \delta s_i)\cos (\pi ns/L)} $$
+
+We must then propagate and then subtract these error from the variance calculations. 
+
+Now we are ready to move on to fitting the model. First we linearise the data using the formula
+
+$$ k_B T/2\langle a_{\sqrt x}^2 \rangle=BL/2+A\pi^2x/l $$
+
+where $\sqrt x$ is the mode number. We also take the error of the left hand side into account before weighting. We decided to weight the fit by the inverse of the error on the left hand side. We then perform a least squares linear regression, reporting the weighted error of the fit as well.
 
 \section{Solving for the Hydrodynamic Modes of Doublet Filaments}
 
@@ -221,7 +245,7 @@ One must apply numerics to find a particular answer. One possible pursuit may be
 \section{The affects of helical protofilaments}
 
 
-It is known that the protofilaments in an MT, depending on their number, will spiral about the MT center-line. This introduces the question, given we know the spiraling of the protofilaments, can we analytically predict what the effect will be on the observed Young's modulus and shear stiffness? 
+(It should be noted the following better applies to axonemes, but the math is the same, and it it is included here for completeness.) It is known that the protofilaments in an MT, depending on their number, will spiral about the MT center-line. This introduces the question, given we know the spiraling of the protofilaments, can we analytically predict what the effect will be on the observed Young's modulus and shear stiffness? 
 
 Before answering the question directly, we first prove a more tightly would helix will have less potential energy than its unwound counterpart. First note that potential energy is proportional to the square of filament shearing. We show that for tight helices, the shearing approaches zero with $O(\omega^{-2})$. To that end, a arc-length parametrization of the MT center-line as $r(s)$ and write the positions of opposite filaments at a given length as $\vec{r}(s)\pm a_0\vec{e}(\omega s)$ where $\vec{e}(t)=\hat{\vec{n}}\cos(t)+\hat{\vec{k}}\sin(t)$. ($\hat{\vec{n}}$, $\hat{\vec{k}}$ defines with respect to $\vec{r}(s)$. This parametrization severely restrict the types of helices that can be discussed, but the following is illustrative rather than complete.) Thus we have the shearing between the protofilaments will then be 
 $$ \Delta(s)=\int_0^s a_0\cos(\omega s)\| \ddot{\vec{r}}(t) \| dt $$
