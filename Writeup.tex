@@ -1,0 +1,240 @@
+\documentclass{article}
+
+\usepackage{amssymb,amsmath,amsthm,amsfonts,bbm,accents,mathtools,dsfont}
+\usepackage{upgreek}
+\usepackage{gensymb}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{comment}
+\usepackage{geometry}
+\usepackage{graphicx,ctable,booktabs}
+\usepackage[]{units}
+\usepackage{setspace}
+\usepackage{wrapfig}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\newcommand{\lint}{\int\limits}
+\newcommand{\dint}{\displaystyle\int}
+\newcommand{\llim}{\lim\limits}
+\newcommand{\lsum}{\sum\limits}
+\newcommand{\clos}[1]{\overline{#1}}
+\newcommand{\trans}[1]{#1^\top}
+\def\mean#1{\left< #1 \right>}
+\newcommand{\error}{\ensuremath{{}^{{}_{_\sim}}}}
+\newcommand{\minus}{\ensuremath{{}^{{}_{_{{-}}}}}\!}
+
+\DeclareMathOperator{\vol}{vol}
+\DeclareMathOperator{\sinc}{sinc}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\osc}{osc}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\Ima}{Im}
+\DeclareMathOperator{\var}{var}
+\DeclareMathOperator{\trace}{tr}
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+%
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\makeatother
+
+\makeatletter
+\renewcommand*\env@matrix[1][\arraystretch]{%
+	\edef\arraystretch{#1}%
+	\hskip -\arraycolsep
+	\let\@ifnextchar\new@ifnextchar
+	\array{*\c@MaxMatrixCols c}}
+\makeatother
+
+\newcommand*{\Value}{\frac{1}{2}x^2}%
+
+\newtheoremstyle{exampstyle}
+{} % Space above
+{\parsep} % Space below
+{} % Body font
+{} % Indent amount
+{\itshape} % Theorem head font
+{.} % Punctuation after theorem head
+{.5em} % Space after theorem head
+{} % Theorem head spec (can be left empty, meaning `normal')
+\theoremstyle{exampstyle} \newtheorem*{remark}{Remark}
+
+\renewcommand{\complement}[1]{#1^\mathsf{c}}
+\newcommand{\R}{\mathds{R}}
+\newcommand{\N}{\mathds{N}}
+\newcommand{\C}{\mathds{C}}
+\newcommand{\Z}{\mathds{Z}}
+\newcommand{\Q}{\mathds{Q}}
+\newcommand{\D}{\mathds{D}}
+\newcommand{\Hyp}{\mathds{H}}
+\newcommand{\1}{\mathds{1}}
+\newcommand{\e}{\mathds{E}}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\compcent}[1]{\vcenter{\hbox{$#1\circ$}}}
+\newcommand{\comp}{\mathbin{\mathchoice
+		{\compcent\scriptstyle}{\compcent\scriptstyle}
+		{\compcent\scriptscriptstyle}{\compcent\scriptscriptstyle}}}
+
+\providecommand*{\unit}[1]{\ensuremath{\mathrm{\,#1}}}
+
+\makeatletter
+\providecommand{\diff}%
+{\@ifnextchar^{\DIfF}{\DIfF^{}}}
+\def\DIfF^#1{ \mathop{\mathrm{\mathstrut d}} \nolimits^{#1}\gobblespace }
+\def\gobblespace{\futurelet\diffarg\opspace}
+\def\opspace{%
+	\let\DiffSpace\!
+	\ifx\diffarg( \let\DiffSpace\relax \else
+	\ifx\diffarg\[ \let\DiffSpace\relax \else
+	\ifx\diffarg\] \let\DiffSpace\relax \else
+	\ifx\diffarg\{ \let\DiffSpace\relax \fi\fi\fi\DiffSpace}   
+\providecommand{\deriv}[3][]{ \frac{\diff^{#1}#2}{\diff #3^{#1}}}
+\providecommand{\pderiv}[3][]{ \frac{\partial^{#1}#2}{\partial #3^{#1}}}
+
+\newcommand{\dderiv}{\displaystyle\deriv}
+\newcommand{\dpderiv}{\displaystyle\pderiv}
+
+\begin{document}
+
+\title{Doublet Writeup}
+\author{George Saussy}
+\maketitle
+
+We consider several possibilities for modeling doublets: first that we choose a pair of compressible filaments with rigid normal connections, fixed at a constant distance $r$ from some central backbone. Second, we consider that the filaments are rigid and their distance fixed, but that they may slide with respect to each other. We first describe this process in two dimensions, and then attempt to generalize it to a backbone in $\mathbb{R}^3$ (and one that incorporates bent-twist coupling).
+
+We also consider a more general model that computes an energy functional given two arbitrary fibers in $\mathbb{R}^3$. We seek to impose minimizing constraints and apply calculus of variations to find equilibrium states for given shapes.
+
+\section{TODO}
+
+Write autocorrelation function. Write correspondence between B-model and $\kappa$-model. find $\cos$ mode decay times and hydrodynamic modes.
+
+
+
+\section{Energy in Fourier Modes}
+
+To arrive at a useful formula, we follow Sartori, making assumptions where appropriate. We model the microtubule as a pair of flexible rods connected by shear springs with spring constant $k$ per unit length and rest distance $a_0$. We assume each rod has a Young's modulus of $EI:=A/2$ and that $d_0$ is much smaller than the radius of curvature of the center-line of the pair, so that the rods curvature is approximately equal. We also assume the microtubule is oriented so that $\theta(s)=0$ and that the shearing at a given position is denoted by $\Delta(s)$ and assume $\Delta(0)=0$. Now we make the assumption that the distance between the rods remains approximately fixed along the length of the pair. Thus we have the equation
+$$U=\int_0^L ds (EI\theta^2(s) + \frac{k}{2}\Delta^2(s))$$
+However, we know $\Delta(s)=\int_0^{s^\prime} ds^\prime d_0\dot{\theta}(s^\prime)=d_0\theta(s)$ this of course gives
+$$U=\int_0^L ds (EI\theta^2(s) + \frac{k}{2}d_0^2\theta^2(s))$$
+(Before moving on, we note that this rail road track model is equivalent to the model described in the introduction by treating adjacent protofilament rods at rail road track pairs, where the bending curvature of each pair is multiplied by a factor $\cos(\psi)$ where $\psi$ is the angle between the bending plane and the rail road plane. However, these terms superimpose, so that there is a term analogous to $ka_0/2$. Further, the strength of the hypothesized shear springs connecting the protofilaments can be deduced from the geometry of the protofilament. This, in turn, corresponds to the strength of the molecular bonds between the protofilaments and in turn the strength of a tubulin-tubulin bond.)  
+So we may identify $kd_0^2/2:=B$ so we arrive at 
+$$ U=A/2 \int_0^L ds \dot{\theta}^2(s)+B\int_0^L ds \theta^2(s) $$.
+Now we take the Fourier series of $\theta$ to get 
+$$ \theta (s)= \sum_{n=0}^\infty a_n \cos (\pi ns/L) $$
+and we substitute this into the expressions for the potential energy and simplify to get 
+\begin{align*} U &= B \int_0^L \diff s 
+	(\sum_{n=0}^\infty ds a_n \cos (\pi ns/L) \\ &+ A/2 \int_0^L ds (\sum_{n=0}^\infty \frac{-\pi na_n}{L} \sin (\pi ns/L)    \end{align*}
+
+(We expect to get many cross terms between Fourier modes. However, after integration, they all vanish leaving only square terms.) Combining the integrals and moving the sum to the outside we get:
+\begin{align*} 
+	U = \sum_{n=0}^\infty \int_0^L & \diff s \left( B+\frac{A\pi^2 n^2}{2L^2}\right) \left( a_n^2\cos^2\left(\frac{\pi ns}L\right) \right)
+\end{align*}
+
+which is easily integrable to get:
+\begin{align*}
+    U &= \sum_{n=0}^\infty L/2 (B+A\pi^2 n^2/2L^2)a_n^2  \\
+    &=\sum_{n=0}^\infty (BL/2+A\pi^2 n^2 /4L)a_n^2 \\
+\end{align*}
+
+We may then identify the energy of a given mode with its amplitude squared multiplied by factor $ (BL/2+A\pi^2 n^2 /2L) $. Now we apply the equipartition theorem to get an expected value 
+$$ \langle a_n^2 \rangle = \frac{k_BT/2}{(BL/2+A\pi^2 n^2 /4L)} $$
+For a check, we set $B=0$ and recall we should have $A = EI$ in this case to get:
+$$ \langle a_n^2 \rangle = \frac{k_BT}{EI \pi^2 n^2 /4L} $$
+However, in the above we have assumed that $\langle a_n \rangle =0 $, which corresponds to the case that the MT has a bent resting shape. None the less, allowing for a bent rest shape does not change the above except that we must replace $\langle a_n^2 \rangle$ with $\var(a_n)$.
+Further, the error in measurement will be (Gittes et. al. 1993)
+$$ \langle a_n^2 \rangle^{noise} = \frac{8\langle \epsilon^2 \rangle}{L}\Big [1+(N-1)\sin^2 \Big (\frac{n\pi}{2N}\Big )\Big ] $$ 
+where $\epsilon$ is the error in the position reported by the tracking. To figure this value, we tracked a motionless MT that was stuck to the surface of the slide glass for [tktk frame number] and calculated  $\langle \epsilon^2 \rangle$ by taking the variance of the positions. We found $\langle \epsilon^2 \rangle = [tktk]$.
+$$ \langle a_n^2 \rangle^{measured}=\frac{k_BT/2}{(BL/2+A\pi^2 n^2 /4L)} + \frac{8\langle \epsilon^2 \rangle}{L}\Big [1+(N-1)\sin^2 \Big (\frac{n\pi}{2N}\Big )\Big ] $$ 
+
+\section{Fitting the model}
+
+$$ COMING $$
+$$ SOON $$
+
+\section{Solving for the Hydrodynamic Modes of Doublet Filaments}
+
+We wish to now solve for the hydrodynamic modes of a microtubule doublet. That is to say, we wish to solve for a function $\theta(s,t)$ such that it is separable. If found, the solution would correspond to a solution where the (angular) shape of the microtubule doublet remains constant but its amplitude decays in time.
+
+However, this task is not strictly possible. The equation we are trying to solve can be found in Sartori 2015, equations 3.22-3.24, which are coupled, non-linear ODE's. Fortunately, Sartori and Gittes provide a set of assumptions that linearize the equations. We begin with the assumption that the bending of the doublet occurs only in one plane, the plane of the doublet (e.g. Sartori 2015 Fig. 3.1). (We will address this assumption itself momentarily, but we assume its validity for now.)
+$$ (\xi_n \vec{n}\vec{n} + \xi_t \vec{t}\vec{t}) \cdot \partial_t \vec{r} =-\partial_s [(\kappa \ddot{\theta}-\dot{a}F+af)\vec{n}-\tau t] $$
+retaining the definitions of the variable found in Sartori, substituting $\theta$ for $\psi$. First we assume that $a(s)=a_0$, then that there are no external forces, save hydrodynamic ones. The latter assumption causes the $\tau$ term to (approximately) drop out. Now we assume the motor forces are zero so that 
+$$\dot{a}F+af=a_0f=-k\Delta(s)=-ka_0^2\theta(s) $$
+Thus we have:
+$$ \xi_n \vec{n} \cdot \partial_t \vec{r} = -\partial_s [\kappa\ddot{\theta} -ka_0^2\theta]$$
+
+Now we make the small angle approximation for $\theta$. This gives us
+$$\xi_n \partial_t \theta = -\partial_s^2 [(\kappa\ddot{\theta} -ka_0^2\theta)] =-\kappa\ddddot{\theta} +ka_0^2\ddot{\theta}$$
+So using separation of variables and noting that the resulting equations are linear, $\theta$ will be a summation over terms of the form 
+$$ \theta=e^{\omega t} e^{\nu s} $$
+where for some $\lambda \in \mathbb{R}$ we have
+$$ \omega=\pm \lambda/\xi_n $$
+$$ \nu=\pm \sqrt{ \frac{ ka_0^2 \pm \sqrt{k^2a_0^4-4\kappa\lambda} }{2\kappa} } $$
+No we impose constraints. First, we expect $\delta$ to be negative, so we require $\lambda$ to be negative, as $\xi_n$ is positive. With negative $\lambda$ we then expect to get two real values for $\nu$, opposite in sign; and two imaginary values, with opposite argument. For convenience we write the real solutions as $\pm \nu_1$ and the imaginary ones as $\pm i \nu_2 $.
+
+Now, we require $\theta$ to be real, so that the final solution of the angular portion of $\theta$ for a given $\lambda$ will be of the form
+$$X=A_+e^{\nu_1 s}+A_-e^{-\nu_1 s}+B_+ \cos(\nu_2 s) +B_-\sin(\nu_2 s) $$
+Recall that $\theta = X e^{\delta t}$. From Gittes, we have the boundary conditions on an unconstrained filament, namely $\dot{\theta}=\ddot{\theta}=0$ at $s=0,L$.
+This gives four linear equations in $A_{\pm},B_{\pm}$, so that our problem becomes finding a vector in the null space of a matrix. Sparing the reader the algebra, we get:
+
+We compute $\dot\theta$ and $\ddot\theta$ at the two ends:
+\begin{align*}
+0 &= \left( A_+\nu_1-A_-\nu_1+ B_-\nu_2\right)\\
+0 &= \left( A_+\nu_1e^{\nu_1L} -A_-\nu_1e^{-\nu_1L} - B_+\nu_2\sin(\nu_2L) + B_-\nu_2\cos(\nu_2L)\right)\\
+0 &= \left( A_+\nu_1^2 + A_-\nu_1^2 + B_+\nu_2^2\right)\\
+0 &= \left( A_+\nu_1^2e^{\nu_1L} + A_-\nu_1^2e^{-\nu_1L} - B_+\nu_2^2\cos(\nu_2L) - B_-\nu_2^2\sin(\nu_2L)\right)
+\end{align*}
+
+
+Sparing the reader the algebra, we can solve the first equation for $A_+$. Then, noting that we may devide the tree remaining equations by $A_-$ and define $\overline{B_\pm}:=B_\pm/A_-$, and demanding that $\nu_2=\frac{(2n+1)\pi}{L}$ then the equations have the non-trivial solution
+$$ \overline{B_-}=\frac{2\nu_1 \sinh (\nu_1 L)}{\nu_2 (1+e^{\nu_1L})} $$
+$$ \overline{B_+}=0 $$
+
+Further, the assumption about $\nu_2$ then implies that $\lambda$ has a discrete spectrum, being
+$$ \lambda= (k^2a_0^4-(2\kappa\nu_2^2+ka_0^2)^2 )/(4\kappa) $$
+
+Further, there are no solutions where $ \overline{B_+}\neq0$ and $\overline{B_-}=0$. More modes may exist, but I have not found them.
+
+Now we wish to get rid of the assumption that the doublet must bend in the doublet plane. This is non-trivial, as both the separate problems of in-plane bending and non-in-plane bending are themselves non-trivial. Fortunately, in Gittes, we get the hydrodynamic modes for a rod. This (with some re-scaling) is equivalent to the doublet bending out of plane. (Setting $k=0$ in the equation above recovers these solutions, although I need to explicitly check this.)
+
+Further, if we assume that the orientation of the doublet does not change, then we may superimpose the solutions, so long as the decay constants match. However, it is unreasonable to generalize to three space without considering the orientation of the doublet changing along its length. As of writing, I do not know if twisted hydrodynamic modes exist or how to solve for them. In particular, the meaning of a twisted mode is ambiguous. 
+
+
+\section{Solving for the minimum potential arrangement}
+
+A reasonable question is: given a parametrization of the center-line of the doublet in three-space, can we solve for the orientation of (energy-minimizing) the doublet along its length? Naturally the calculus of variations is called for. However, here we will set up the problem and write the solution, sparing the reader the algebra.
+
+We can characterize the doublet's bending in $\mathbb{R}^3$ by its tangent angle at a point given by spherical polar coordinates, $\theta$, $\phi$, and then write the orientation of the doublet as $\psi$ where $\psi=0$ implies the doublet is aligned with $\hat{\vec{\theta}}$ and $\psi=\pi/2$ implies the ribbon is aligned with $\hat{\vec{\phi}}$. We may then approximate 
+$$ U=\int_0^L ds ( \kappa \left( \dot{\theta}^2+\dot{\phi}^2+\left( \frac{a_0}{a_0^2+\dot{\psi}^{-2} } \right)^2\right) $$
+$$+ ka_0(L-s)^2 \left(\dot{\theta}\cos \psi +\dot{\phi} \sin \psi \right)^2) $$
+The most simplified version I could get is:
+\[ \ddot{\psi}=2ka_0^2(L-s)^2\left(a_0^2+\psi^{-2}\right)^3\sqrt{\left(\dot{\phi}^2+\dot{\theta}^2\right)^2+\dot{\phi}^2\dot{\theta}^2 } 
+\sin \left[ \psi \tan^{-1} \left( 2\frac {\dot{\theta}\dot{\phi}}{\dot{\phi}^2+\dot{\theta}^2} \right) \right] \]
+$$+\frac{2}{\dot{\psi}^2+a_0^2}$$
+
+One must apply numerics to find a particular answer. One possible pursuit may be finding how tight a curve must be before the doublet flips over.
+
+\section{The affects of helical protofilaments}
+
+
+It is known that the protofilaments in an MT, depending on their number, will spiral about the MT center-line. This introduces the question, given we know the spiraling of the protofilaments, can we analytically predict what the effect will be on the observed Young's modulus and shear stiffness? 
+
+Before answering the question directly, we first prove a more tightly would helix will have less potential energy than its unwound counterpart. First note that potential energy is proportional to the square of filament shearing. We show that for tight helices, the shearing approaches zero with $O(\omega^{-2})$. To that end, a arc-length parametrization of the MT center-line as $r(s)$ and write the positions of opposite filaments at a given length as $\vec{r}(s)\pm a_0\vec{e}(\omega s)$ where $\vec{e}(t)=\hat{\vec{n}}\cos(t)+\hat{\vec{k}}\sin(t)$. ($\hat{\vec{n}}$, $\hat{\vec{k}}$ defines with respect to $\vec{r}(s)$. This parametrization severely restrict the types of helices that can be discussed, but the following is illustrative rather than complete.) Thus we have the shearing between the protofilaments will then be 
+$$ \Delta(s)=\int_0^s a_0\cos(\omega s)\| \ddot{\vec{r}}(t) \| dt $$
+This is proportional to the $\omega$ term Fourier coefficient. Further we know from a theorem of Riemann(?) that the Fourier terms must converge with $O(\omega^{-2})$ to zero. 
+
+Now we wish to calculate the affects this would have on our measurements. Here will assume $\omega$ is known e.g. the number of protofilaments for a given MT is known. In that case we write the potential energy again as 
+\begin{align*}
+U=A\int_0^L ds {\theta^\prime}^2 +B\int_0^L ds \theta^2 \\
+=A\int_0^L ds {\theta^\prime}^2 +ka_0\int_0^L ds \Delta (s)
+\end{align*}  
+We also know $ \exists f(s)\in C^2([0,L])\ s.t.\ \exists \omega_0\in\mathbb{R} \forall s\in [0,L],\omega>\omega_0 \Delta(s)<f(s)\omega^{-2} $. Fixing $f(s)$, we have
+$$ A\int_0^L ds {\theta^\prime}^2<U<A\int_0^L ds {\theta^\prime}^2 +ka_0\omega^{-4}\int_0^L ds f^2(s) $$ 
+so as $\omega\to \infty$ we have $ U=A\int_0^L ds {\theta^\prime}^2 $, meaning the potential then reduces to the case without length dependence. 
+
+More will have to be done to figure the form of $\Delta$ explicitly as a function of $\omega$. I believe that if $ \omega<<1/\kappa $ then we may be able to write $f(s)=\theta(s)$, and if this is true, then we may be able to estimate the number of protofilaments in an MT by measuring apparent $B$. But I have yet to work it out.   
+\end{document}
